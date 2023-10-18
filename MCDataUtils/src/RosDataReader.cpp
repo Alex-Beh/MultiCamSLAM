@@ -5,12 +5,10 @@
 #include "MCDataUtils/RosDataReader.h"
 
 void RosDataReader::initialize(MCDataUtilSettings refocus_set) {
-
     settings = refocus_set;
     CAMCHAIN = true;
     img_counter = 0;
-    read_ros_data( settings);
-
+    read_ros_data(settings);
 }
 
 /// Call back method for images of each camera
@@ -18,7 +16,6 @@ void RosDataReader::initialize(MCDataUtilSettings refocus_set) {
 /// \param info_msg
 
 void RosDataReader::callBackFunctor::CB(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraInfoConstPtr& info_msg) {
-
     //VLOG(2)<<"inside subscriber \n"<<this->cam_ind;
     cv_bridge::CvImagePtr cv_ptr;
     try
@@ -26,10 +23,12 @@ void RosDataReader::callBackFunctor::CB(const sensor_msgs::ImageConstPtr& msg, c
         if (this->re->grab_frame && !this->got_frame) {
             cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
             this->re->ros_imgs[this->cam_ind] = cv_ptr->image;
+
             std::stringstream ss;
             ss<<msg->header.stamp;
             this->re->ros_img_seq_nums[this->cam_ind] = this->re->settings.segmasks_path+"/cam"+to_string(this->cam_ind) +"/"+ ss.str()+"."+this->re->MASK_TYPE; //msg->header.seq should be seq. but seeing some lag in recorded rosbag
             //Copy camera info to publish later for rectified images
+
             sensor_msgs::CameraInfo c; //=  boost::make_shared<sensor_msgs::CameraInfo>();
             c.header = info_msg->header;
             c.height = info_msg->height;
@@ -42,7 +41,6 @@ void RosDataReader::callBackFunctor::CB(const sensor_msgs::ImageConstPtr& msg, c
             c.binning_x = info_msg->binning_x;
             c.binning_y = info_msg->binning_y;
             c.roi = info_msg->roi;
-
             this->re->cam_info_msgs[this->cam_ind] = c;
             //copying done
 
@@ -56,7 +54,6 @@ void RosDataReader::callBackFunctor::CB(const sensor_msgs::ImageConstPtr& msg, c
             this->counter++ ;
             this->got_frame= true;
         }
-
     }
     catch (cv_bridge::Exception& e)
     {
@@ -64,11 +61,9 @@ void RosDataReader::callBackFunctor::CB(const sensor_msgs::ImageConstPtr& msg, c
         return;
     }
 
-    if(RosDataReader::callBackFunctor* t = dynamic_cast<RosDataReader::callBackFunctor*>(this)) {
-    }else{        ROS_ERROR("The objects is not of callBackFunctor. Check the code");
+    if(!RosDataReader::callBackFunctor* t = dynamic_cast<RosDataReader::callBackFunctor*>(this)) {
+        ROS_ERROR("The objects is not of callBackFunctor. Check the code");
     }
-
-
 }
 
 bool RosDataReader::isDataLoaded(){
@@ -83,7 +78,6 @@ bool RosDataReader::isDataLoaded(){
 
 
 void RosDataReader::loadNext(vector<cv::Mat>& imgset){
-
     VLOG(2)<<"GRABBING FRAMEs"<<endl;
     grab_frame=true;
 
@@ -117,8 +111,6 @@ void RosDataReader::loadNext(vector<cv::Mat>& imgset){
 }
 
 void RosDataReader::read_ros_data(MCDataUtilSettings settings){
-
-
     MASK_TYPE = settings.mask_type;
     string path = settings.calib_file_path;
     LOG(INFO) << "Reading calibration data from ROS ..."<<path<<endl;
@@ -149,7 +141,6 @@ void RosDataReader::read_ros_data(MCDataUtilSettings settings){
         ros_img_seq_nums.push_back("");
         cam_info_msgs.push_back(sensor_msgs::CameraInfo());
         // cam_subs.push_back(it_.subscribeCamera(cam_topics_[i], 1 , &saRefocus::camCallback, this));
-
 
         // READING CAMERA PARAMETERS from here coz its only one time now due to static camera array
         // in future will have to subscribe from camera_info topic
@@ -218,8 +209,6 @@ void RosDataReader::read_ros_data(MCDataUtilSettings settings){
             }
         }
 
-
-
         Mat Rt = build_Rt(R, t);
         Mat P = K_mat*Rt;
 
@@ -232,7 +221,6 @@ void RosDataReader::read_ros_data(MCDataUtilSettings settings){
         dist_coeffs_.push_back(dist_coeff);
         K_mats_.push_back(K_mat);
         P_mats_.push_back(P);
-
     }
 
     img_size_ = calib_img_size_;
@@ -242,7 +230,6 @@ void RosDataReader::read_ros_data(MCDataUtilSettings settings){
 void RosDataReader::getNext(vector<cv::Mat>& imgs, double& timeStamp){
     loadNext(imgs);
     timeStamp = tStamp.toSec();
-
 }
 
 void RosDataReader::getNext(vector<cv::Mat>& imgs , vector<string>& segmaskImgs, double& timeStamp){

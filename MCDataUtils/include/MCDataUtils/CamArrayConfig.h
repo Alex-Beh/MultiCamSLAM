@@ -25,6 +25,5 @@ public:
     int num_cams_;
     Size im_size_;
     bool RECTIFY;
-
 };
 

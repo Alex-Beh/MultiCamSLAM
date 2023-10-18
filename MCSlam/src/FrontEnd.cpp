@@ -83,6 +83,7 @@ void FrontEnd::compute_overlap() {
             //currentFrame->imgs[c2].copyTo(outImg(cv::Range(0, camconfig_.im_size_.height), cv::Range(camconfig_.im_size_.width, camconfig_.im_size_.width * 2)));
             //cvtColor(outImg,outImg , COLOR_GRAY2BGR);
             ///////////////////
+
             for (unsigned int i = 0; i < grid_cols; i++){
 
                 for (unsigned int j = 0; j < grid_rows; j++) {
@@ -109,10 +110,8 @@ void FrontEnd::compute_overlap() {
                     //see if it lies within bounds
                     if(expected_x_min > 10 and expected_x_min < camconfig_.im_size_.width and expected_y_min < camconfig_.im_size_.height and expected_y_min > 10){
                         overlap_grid.rowRange(cell_size_y * j , (j+1) * cell_size_y ).colRange(cell_size_x * i, (i+1) * cell_size_x ) = overlap_grid.rowRange(cell_size_y * j , (j+1) * cell_size_y ).colRange(cell_size_x * i,(i+1) * cell_size_x ) + 1;
-
                         overlap_grid2.at<double>(j,i) = overlap_grid2.at<double>(j,i) + 1;
                     }
-
 
                     //imgGrid[i][j].reserve(5);
                     //find the grids in c2 that overlap with c1.
@@ -181,28 +180,14 @@ void FrontEnd::compute_overlap() {
        // cv::resize(overlap_grid, overlap_grid, camconfig_.im_size_);
        // cv::imshow("overlap for camera:"+to_string(c1), overlap_grid_c);
        // cv::waitKey(0);
-
     }
+
     for(int i =0; i <camconfig_.num_cams_;i++)
     {
-       // cout<<"number of no overlap cells in cam"<<i<<" :"<<non_overlap_fraction.at(i)<<endl;
+        // cout<<"number of no overlap cells in cam"<<i<<" :"<<non_overlap_fraction.at(i)<<endl;
         non_overlap_fraction.at(i) =  non_overlap_fraction.at(i)/total_non_overlap_cells;
        // cout<<"fraction of no overlap cells in cam"<<i<<" :"<<non_overlap_fraction.at(i)<<endl;
     }
-
-}
-
-void FrontEnd::computeRefocusedImage(){
-    //! compute the support points. multicam_elas-
-    //! updatedata- remains same
-    //! compute support points
-    //!    - 1. compute matches between reference view & next view. For all the matches apply the disparity obtained and find other camera disparities.
-    //!         Take +/- 5 pixels across and find the matches. Now we have intra matches across all the cameras for visible points.
-    //!    - 2. For each other view - match the same way only for unmatched pixels.
-    //!    - 3.
-    //! disparity prior-
-    //! disparity optimization.
-    //!
 }
 
 void FrontEnd::obtainLfFeatures(std::vector<IntraMatch>& matches_map, MultiCameraFrame* lf_frame,
@@ -686,57 +671,6 @@ void FrontEnd::filterIntraMatches(std::vector<IntraMatch>& matches_map, MultiCam
 
 }
 
-//void FrontEnd::BruteForceMatching(Mat img1, Mat img2, vector<Mat> descs1, vector<Mat> descs2, vector<KeyPoint> kps1, vector<KeyPoint> kps2){
-//    vector<vector<DMatch>> matches_mono;
-//    vector<DMatch> good_matches;
-//    vector<KeyPoint> kp_pts1_mono, kp_pts2_mono;
-//    Mat mask_mono;
-//
-//    Mat descs1_mono = Mat(descs1.size(), descs1[0].cols, CV_8U );
-//    Mat descs2_mono = Mat(descs2.size(), descs2[0].cols, CV_8U );
-//    int ind=0;
-//    for (auto& d : descs1){
-//        d.copyTo(descs1_mono.row(ind));
-//        ind++;
-//    }
-//    ind=0;
-//    for (auto& d : descs2){
-//        d.copyTo(descs2_mono.row(ind));
-//        ind++;
-//    }
-//
-//    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce-Hamming");
-//    auto start_intramatch = high_resolution_clock::now();
-//    matcher->knnMatch(descs1_mono, descs2_mono, matches_mono, 2);
-//    auto stop_intramatch = high_resolution_clock::now();
-//    auto duration = duration_cast<milliseconds>(stop_intramatch - start_intramatch);
-//    VLOG(1)<<"time taken for matching brute force "<<duration.count()<<endl;
-//
-//    for(auto &m : matches_mono){
-//        if(m[0].distance < 0.7*m[1].distance) {
-//            if(m[0].distance > 50)
-//                continue;
-//            KeyPoint p_prev = kps1[m[0].queryIdx];
-//            KeyPoint p_cur = kps2[m[0].trainIdx];
-//            //make sure that the points belong to static areas based on the segmasks
-//           // if (currentFrame->segMasks[0].at<float>(p_prev.pt.y, p_prev.pt.x) < 0.7 and currentFrame->segMasks[1].at<float>(p_cur.pt.y, p_cur.pt.x) < 0.7){
-//                kp_pts1_mono.push_back(p_prev);
-//                kp_pts2_mono.push_back(p_cur);
-//                good_matches.push_back(m[0]);
-//           // }
-//
-//        }
-//
-//    }
-//    Mat matches_img;
-//    drawMatches( img1, kps1,img2, kps2, good_matches, matches_img, Scalar::all(-1),
-//                 Scalar::all(-1) );
-//    imshow("Good Matches:"+to_string(0)+"--"+to_string(1), matches_img );
-//    waitKey(5);
-//
-//    cout<<"BRUTEFORCE Total Number of matches between cam0 and cam1: "<<good_matches.size()<<endl;
-//}
-
 void FrontEnd::processFrameNon(){
     auto start_intramatch = high_resolution_clock::now();
     // get the images and extract key points
@@ -1133,6 +1067,7 @@ cv::Mat FrontEnd::getPose(){
     unique_lock<mutex> lock(mMutexPose);
     return currentFramePose;
 }
+
 ////////////// this is just for visualizing which poss estimation is better////////////
 cv::Mat FrontEnd::getPose_seventeen(){
     unique_lock<mutex> lock(mMutexPose);
@@ -1144,21 +1079,10 @@ cv::Mat FrontEnd::getPose_gp3p(){
     return currentFramePose2;
 }
 
-
 cv::Mat FrontEnd::getPose_Mono(){
     unique_lock<mutex> lock(mMutexPose);
     return currentFramePose_mono;
 }
-/*cv::Mat FrontEnd::getPose(){
-    unique_lock<mutex> lock(mMutexPose);
-    cv::Mat pose;
-    if(currentFramePose.isZero()) {
-        pose = cv::Mat::eye(3, 4, CV_32FC1);
-    }
-    else
-        cv::eigen2cv(currentFramePose, pose);
-    return pose;
-}*/
 
 vector<cv::Mat> FrontEnd::getAllPoses(){
     unique_lock<mutex> lock(mMutexPose);
@@ -1196,12 +1120,11 @@ void FrontEnd::reset() {
         f->image_descriptors.clear();
         f->image_kps.clear();
     }
-    //currentFrame->imgs.clear();
-    //currentFrame->segMasks.clear();
-    //currentFrame->image_descriptors.clear();
-   // currentFrame->image_kps.clear();
-   // currentFrame->image_kps_undist.clear();
-
+    // currentFrame->imgs.clear();
+    // currentFrame->segMasks.clear();
+    // currentFrame->image_descriptors.clear();
+    // currentFrame->image_kps.clear();
+    // currentFrame->image_kps_undist.clear();
 }
 
 void FrontEnd::writeTrajectoryToFile(const string &filename, bool mono)
@@ -1237,8 +1160,6 @@ void FrontEnd::writeTrajectoryToFile(const string &filename, bool mono)
     f.close();
     VLOG(0) << "trajectory saved!" << endl;
 }
-
-
 
 void FrontEnd::check_tri_sp(int num_views, vector<int> view_inds, IntraMatch& matches, MultiCameraFrame* lf){
     //// THIS IS ONLY FOR DEBUG. WILL BE REMOVED////
@@ -1296,6 +1217,7 @@ void FrontEnd::check_tri_sp(int num_views, vector<int> view_inds, IntraMatch& ma
     cout<<"\n--------------------"<<endl;
 
 }
+
 void FrontEnd::drawInterMatch(MultiCameraFrame* lf_prev, MultiCameraFrame* lf_cur, int prev_ind, int cur_ind){
     Mat all = Mat::zeros(Size(lf_prev->num_cams_* lf_prev->img_size.width ,2 * lf_prev->img_size.height), CV_8UC3);
     Scalar color_sp = Scalar(0,0,255);

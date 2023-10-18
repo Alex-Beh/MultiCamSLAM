@@ -155,10 +155,10 @@ public:
         map_mono = new GlobalMap();
 
         //Create Loop closer objects
-//        lcLF_ = new LoopCloser(orb_vocabulary);
-//        lcMono_ = new LoopCloser(orb_vocabulary);
-//        depthProc = new DepthReconstructor(1, camconfig_.im_size_, true, false);
-//        depthProc->init(camconfig_.K_mats_[0] , camconfig_.dist_coeffs_[0],  camconfig_.K_mats_[1] , camconfig_.dist_coeffs_[1],camconfig_.R_mats_[1], camconfig_.t_mats_[1]);
+        // lcLF_ = new LoopCloser(orb_vocabulary);
+        // lcMono_ = new LoopCloser(orb_vocabulary);
+        // depthProc = new DepthReconstructor(1, camconfig_.im_size_, true, false);
+        // depthProc->init(camconfig_.K_mats_[0] , camconfig_.dist_coeffs_[0],  camconfig_.K_mats_[1] , camconfig_.dist_coeffs_[1],camconfig_.R_mats_[1], camconfig_.t_mats_[1]);
 
         convertCamConfig_CV2GTSAM(camconfig, RT_Mats);
         convertCamConfig_CV2GTSAM(camconfig, RT_Mats_init);
@@ -169,13 +169,11 @@ public:
         // compute_overlap();
     }
 
-
-    ~FrontEnd(){
-
-    }
+    ~FrontEnd(){}
 
     void compute_overlap();
-    //MOno
+
+    // Mono
     bool initialization_mono(vector<DMatch> &matches_mono);
     void estimatePose_Mono();
     void findMatchesMono(MultiCameraFrame* lf_prev, MultiCameraFrame* lf_cur, int cam_ind, std::vector<DMatch>& matches);
@@ -192,7 +190,6 @@ public:
                 const vector<cv::Point2f>& kps2, vector<bool> &inliers,
                 const cv::Mat &K, vector<cv::Point3f> &P3D, float th2,
                 vector<bool> &good, float &parallax, const cv::Mat &R1, const cv::Mat &t1);
-    bool checkTriangulation(vector<Mat>& PJs, vector<Point2f>& kps, cv::Mat& P3D, float &parallax);
     bool ReconstructF(const vector<cv::Point2f>& kps1, const vector<cv::Point2f>& kps2,
                       vector<bool> &inliers, cv::Mat &F, cv::Mat &K,float sigma,
                       cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D,
@@ -206,9 +203,7 @@ public:
     cv::Mat getPose_Mono();
     vector<cv::Mat> getAllPoses_Mono();
 
-
     void createFrame(vector<Mat> img_set, vector<Mat> segmap_set, double timeStamp);
-    void computeRefocusedImage();
     void filterIntraMatches(std::vector<IntraMatch>& matches_map, MultiCameraFrame* currentFrame,
                             std::vector<IntraMatch>& filtered_intra_matches,
                             vector<DBoW2::NodeId >& words_, set<DBoW2::NodeId >& filtered_words);
@@ -277,9 +272,7 @@ public:
     void tracksForHist();
     void searchLocalMap(MultiCameraFrame *prevKF, vector<DMatch> inter_matches_with_landmarks, vector<bool> inliers,
                         vector<DMatch> &inlierAllMapMatches, Mat &refinedPose, vector<int> &alllids);
-    void writeLogs( string stats_file);
-
-
+    void writeLogs(string stats_file);
 
     //only for mono-comparison
     GlobalMap* map_mono;
@@ -340,8 +333,6 @@ public:
     vector<gtsam::Pose3> RT_Mats, RT_Mats_init;
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-
 };
 
 

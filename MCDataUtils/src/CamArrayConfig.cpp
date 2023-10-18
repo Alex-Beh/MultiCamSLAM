@@ -61,8 +61,8 @@ void CamArrayConfig::make_ref_cam(int cam_ind){
 
        R_mats_[cam_ind - j - 1] = R.clone();
        t_mats_[cam_ind-j-1] = t.clone();
-
     }
+
     R = Mat_<double>::zeros(3,3);
     t = Mat_<double>::zeros(3,1);
     //cout<<"it is the camera itself. its R is identity and t is 000\n";
@@ -79,9 +79,4 @@ void CamArrayConfig::make_ref_cam(int cam_ind){
         R_mats_[j] = R.clone();
         t_mats_[j] = t.clone();
     }
-    // uploadMatsToGPU_new(cam_ind);
-
 }
-
-
-

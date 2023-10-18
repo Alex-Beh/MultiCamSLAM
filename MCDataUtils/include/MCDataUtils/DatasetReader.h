@@ -18,18 +18,13 @@ class DatasetReader : public DatasetReaderBase{
 public:
 
     //constructor and destructor
-    DatasetReader(){
-
-    }
-    ~DatasetReader(){
-
-    }
+    DatasetReader(){}
+    ~DatasetReader(){}
 
     void initialize(MCDataUtilSettings refocus_set);
     void loadNext(vector<cv::Mat>& imgs);
     void getNext(vector<cv::Mat>& imgs, double& timeStamp);
     void getNext(vector<cv::Mat>& imgs, vector<string>& segmaskImgs, double& timeStamp);
-
 
     int MTIFF_FLAG;
     int MP4_FLAG;

@@ -54,8 +54,6 @@ int frame_counter=0;
 int optim_cnt=0;
 
 int main(int argc , char** argv){
-
-
     // parse arguments
     google::ParseCommandLineFlags(&argc, &argv, true);
     google::InitGoogleLogging(argv[0]);
@@ -68,8 +66,6 @@ int main(int argc , char** argv){
     //Initialize get the data from ros bag using ros reader
     //read the dataset and calibration given settings for the refocus object
     DatasetReaderBase* datareader;
-   
-   
 
     if (settings.is_ros){
         // if ROS is enabled Initialize the ROS node and
@@ -78,15 +74,13 @@ int main(int argc , char** argv){
         datareader = new RosDataReader(nh);
     }
     else{
-
         datareader = new DatasetReader();
     }
     datareader->initialize(settings);
-    
 
    // create a camera configuration object with came intrinisc and extrinsic params
-    CamArrayConfig* cam_cfg = new CamArrayConfig(datareader->getKMats(),datareader->getDistMats(),datareader->getRMats(),\
-    datareader->getTMats(), datareader->getKalibrRMats(), datareader->getKalibrTMats(), datareader->img_size_, datareader->num_cams_);
+    CamArrayConfig* cam_cfg = new CamArrayConfig(datareader->getKMats(), datareader->getDistMats(), datareader->getRMats(),\
+        datareader->getTMats(), datareader->getKalibrRMats(), datareader->getKalibrTMats(), datareader->img_size_, datareader->num_cams_);
 
    // create the SLAM front end object
     FrontEnd *slam_frontend;  
@@ -101,7 +95,7 @@ int main(int argc , char** argv){
    glViewer = new OpenGlViewer(settings.frontend_params_file, slam_frontend);
    std::thread* viewerThread = new thread(&OpenGlViewer::goLive, glViewer);
 
-   //IN a loop datareader->getNext() or datareader->getNextGPU(), refocus.updateImgs() or refocus.updateImgsGPU()
+   // IN a loop datareader->getNext() or datareader->getNextGPU(), refocus.updateImgs() or refocus.updateImgsGPU()
    // refocus.updateZMap() , optional processing , perform refocus and show in GUI
    
    if(settings.is_ros){
@@ -112,7 +106,8 @@ int main(int argc , char** argv){
    // This method runs the SLAM program in a loop for each new image.
    // user can give keyboard inputs to control the loop for obtaining next image,
    // visualizing and exiting
-   handleKeyboardInput(*slam_frontend, *slam_backend,  *datareader, *glViewer);
+   handleKeyboardInput(*slam_frontend, *slam_backend, *datareader, *glViewer);
+
    //need this? 
    int fr_ind=0;
    /*for (auto& fr : slam_frontend->lfFrames){
@@ -130,15 +125,15 @@ int main(int argc , char** argv){
        }
        fr_ind++;
    }*/
-   slam_frontend->writeLogs(FLAGS_log_file);
-   slam_frontend->logFile_.close();
-   slam_frontend->logFile2_.close();
-   slam_frontend->writeTrajectoryToFile(FLAGS_traj_file, false);
+
+    slam_frontend->writeLogs(FLAGS_log_file);
+    slam_frontend->logFile_.close();
+    slam_frontend->logFile2_.close();
+    slam_frontend->writeTrajectoryToFile(FLAGS_traj_file, false);
     return 0;
 }
 
 bool updateData(FrontEnd& frontend, DatasetReaderBase &dataReader) {
-    
     vector<Mat> imgs, segMasks;
     vector<string> segmaskNames;
     double timeStamp;
@@ -210,8 +205,6 @@ void process_frames(FrontEnd& frontend, Backend& backend){
     }
     
     else if(frontend.initialized_ == INITIALIZED and new_kf){
-        
-        
         if(backend.backendType == MULTI){
             optimtize_ = backend.addKeyFrameMulti();
         }
@@ -244,14 +237,13 @@ void process_frames(FrontEnd& frontend, Backend& backend){
    //BACKEND - add the keyframe, intra matches and observations to a pose graph
    // initially do a sliding window optimization - window fo size 10
 
-   // plot the trajectories
-   //1. mono FE
-   // 2. multi FE
-   //3. mono BE
-   // 4. multi-backend
+    // plot the trajectories
+    //    1. mono FE
+    //    2. multi FE
+    //    3. mono BE
+    //    4. multi-backend
 
    frontend.reset();
-
 }
 
 void handleKeyboardInput(FrontEnd& frontend, Backend& backend, DatasetReaderBase &dataReader, OpenGlViewer &glViewer) {
@@ -266,7 +258,7 @@ void handleKeyboardInput(FrontEnd& frontend, Backend& backend, DatasetReaderBase
     
     //need this - vlog values?
     while (true) {
-        if ( dataReader.settings.is_ros && ! ros::ok())
+        if (dataReader.settings.is_ros && ! ros::ok())
             return;
         int key = waitKey(1);
         // VLOG(2) << "Key press: " << (key & 255) << endl;
@@ -275,14 +267,11 @@ void handleKeyboardInput(FrontEnd& frontend, Backend& backend, DatasetReaderBase
             int condition = ((key & 255));
             switch (condition) {
                 case 46:{
-
                     bool success = updateData(frontend, dataReader);
                     if(success){
                         process_frames(frontend, backend);
-
                     } else
                         continue;
-
                     break;
                 }
                 case 27: // finishing
@@ -301,6 +290,7 @@ void handleKeyboardInput(FrontEnd& frontend, Backend& backend, DatasetReaderBase
                     VLOG(0) << "INVALID INPUT" << endl;
             }
         }
+
         bool live = true; //Hard coded. - need this?
         if(live){
             auto startT = high_resolution_clock::now();

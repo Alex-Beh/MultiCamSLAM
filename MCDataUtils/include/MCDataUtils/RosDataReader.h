@@ -16,18 +16,15 @@ class RosDataReader : public DatasetReaderBase{
 
 public:
     //constructor and destructor
-    RosDataReader(ros::NodeHandle nh): nh_(nh) , it_(nh_){
+    RosDataReader(ros::NodeHandle nh): nh_(nh) , it_(nh_){}
 
-    }
-    ~RosDataReader(){
-
-    }
+    ~RosDataReader(){}
 
     bool CAMCHAIN;
+
     //Inner class
     class callBackFunctor
     {
-
     private:
         int counter;
         int cam_ind;

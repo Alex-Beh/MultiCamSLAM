@@ -75,9 +75,8 @@ catkin_package(
   DEPENDS OpenCV
 )
 
-# set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} /usr/local/lib/python3/dist-packages/numpy/core/include/numpy)
-
-set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} /usr/local/lib/python2.7/dist-packages/numpy/core/include/numpy)
+set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} /usr/local/lib/python3/dist-packages/numpy/core/include/numpy)
+# set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} /usr/local/lib/python2.7/dist-packages/numpy/core/include/numpy)
 
 include_directories(include)
 include_directories( ${PYTHON_INCLUDE_DIRS}  /usr/include/python2.7/)
@@ -85,7 +84,6 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( ${catkin_INCLUDE_DIRS} )
 include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${ADDITIONAL_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} /usr/lib/x86_64-linux-gnu/libpython2.7.so)
-
 
 set (LIBS ${OpenCV_LIBS} ${CUDA_LIBRARIES}  ${Boost_GENERAL} gflags glog)
 FILE(GLOB ${PROJECT_NAME}_SRC src/ParseSettings.cpp src/LiveViewer.cpp)
